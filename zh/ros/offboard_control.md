@@ -41,12 +41,12 @@ translated_sha: 95b39d747851dd01c1fe5d36b24e59ec865e323e
 - [Lairdtech RM024](http://www.lairdtech.com/products/rm024)
 - [Digi International XBee Pro](http://www.digi.com/products/xbee-rf-solutions/modules)
 
-{% mermaid %}
+{mermaid }
 graph TD;
   gnd[Ground Station] --MAVLink--> rad1[Ground Radio];
   rad1 --RadioProtocol--> rad2[Vehicle Radio];
   rad2 --MAVLink--> a[Autopilot];
-{% endmermaid %}
+
 
 ### 2. 机载协同计算机
 
@@ -64,11 +64,11 @@ graph TD;
 - [Gigabyte Brix](http://www.gigabyte.com/products/list.aspx?s=47&ck=104)
 - [Nvidia Jetson TK1](https://developer.nvidia.com/jetson-tk1)
 
-{% mermaid %}
+{ mermaid }
 graph TD;
   comp[Companion Computer] --MAVLink--> uart[UART Adapter];
   uart --MAVLink--> Autopilot;
-{% endmermaid %}
+{endmermaid %}
 
 ### 3. 机载计算机和到ROS的WIFI连接（***推荐***）
 
