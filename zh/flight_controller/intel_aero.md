@@ -5,93 +5,90 @@ translated_sha: 95b39d747851dd01c1fe5d36b24e59ec865e323e
 
 # Intel® Aero Ready to Fly Drone
 
-The Intel® Aero Ready to Fly Drone is a UAV development platform. Part of this is the [Intel Aero
-Compute Board](https://software.intel.com/en-us/aero/dev-kit), running Linux on
-a Quad-core CPU. The other part is an STM32 microcontroller that is connected
-to it and that runs PX4 on NuttX. These are integrated in the same package on
-the [Intel® Aero Ready to Fly Drone](https://software.intel.com/en-us/aero/drone-dev-kit), which also includes
-the vision accessory kit.
+The Intel® Aero Ready to Fly Drone 是一个无人机开发平台。它搭载了在四核CPU上运行Linux的 [Intel Aero](https://software.intel.com/en-us/aero/dev-kit) 计算板。还搭载了与Intel Aero相连的，在NuttX下运行PX4的STM32微控制器。它们和视觉配件包一起集成在 [Intel® Aero Ready to Fly Drone](https://software.intel.com/en-us/aero/drone-dev-kit) 上, 
 
 
 ![](../../assets/hardware/hardware-intel-aero-rtf.jpg)
 
-## Introduction
+## 介绍
 
-The main documentation is on the [official wiki](https://github.com/intel-aero/meta-intel-aero/wiki). It includes instructions how to setup, update and connect to the board. It's important to update to the latest image available since some instructions changed from previous releases.
+主要文档在[官方wiki](https://github.com/intel-aero/meta-intel-aero/wiki)上。介绍了如何设置，更新，和连接开发板。由于部分指令与历史版本不同，故更新到最新版本是有必要的。
 
-You can check the BIOS and distro version by connecting to the board and running the following command:
+你可以通过连接开发板并运行以下命令来查看BIOS和分发版本：
 
 ```
 get_aero_version.py
 ```
 
-The instructions here are tested with the following version:
+以下是特定版本的实际测试指令的输出:
 
-```
+```C
 BIOS_VERSION = Aero-01.00.12_Prod
 OS_VERSION = v01.00.04
 ```
 
-The official documentation also explains how to do development on the Linux side, while these instructions concentrate on updating the firmware on the microcontroller from a development tree.
+官方文档也解释了如何在Linux下开发，此时这些指令用于从版本树上更新微控制器的固件。
 
-## Flashing
+## 烧写
 
-After setting up the PX4 development environment, follow these steps update the PX4 software:
+在设置好PX4开发环境后，以下步骤用于更新PX4软件：
 
-1. Do a full update of all software on the Aero (https://github.com/intel-aero/meta-intel-aero/wiki/Upgrade-To-Latest-Software-Release)
+1. 对Aero上的所有软件进行更新 (https://github.com/intel-aero/meta-intel-aero/wiki/Upgrade-To-Latest-Software-Release)
 
-2. Grab the [Firmware](https://github.com/PX4/Firmware)
+2. 升级 [固件](https://github.com/PX4/Firmware)
 
-3. Compile with `make aerofc-v1_default`
+3. 用指令 `make aerofc-v1_default` 进行编译
 
-4. Configure the target hostname
+4. 配置目标宿主名
 
-If your system resolves link local names you don't have to do anything and you can skip this step. You can test it by trying to ssh into intel-aero.local after connecting to it either via WiFi or USB:
+   ​
+
+如果你的系统不用连接本地名字，可以跳过这一步。你可以在用WiFi或USB与开发板相连后，用ssh连接intel-aero.local来进行测试：
 
 ```
 ssh root@intel-aero.local
 ```
 
-If it doesn't work you can try giving the IP that will be used by the upload script:
+如果以上指令没用，你可以试着上传以下脚本来给出具体IP：
 
 ```
 export AERO_HOSTNAME=192.168.1.1`
 ```
 
-5. Upload with  `make aerofc-v1_default upload`
+5. 升级  `make aerofc-v1_default upload`
 
 
-## Connecting QGroundControl via Network
+## 通过网络连接QGroundControl
 
-1. Make sure you are connected to the board with WiFi or USB Network
+1. 确认你通过WIFI或USB连接上了开发板。
 
-2. ssh to the board and make sure mavlink forwarding runs. By default it automatically starts when booting. It can be started manually with:
+2. 用ssh连接到开发板并确认mavlink已在运行。mavlink是默认开机启动的，可用以下指令手动启动:
 ```
 /etc/init.d/mavlink-routerd.sh start
 ```
 
-3. Start QGroundControl and it should automatically connect.
+3. 启动 QGroundControl，它应该自动连接.
 
-4. Instead of starting QGroundControl, you can open a [NuttX shell](../debug/system_console.md#mavlink-shell) with:
+4. 如果不启动 QGroundControl, 你可以用以下指令打开 [NuttX shell](../debug/system_console.md#mavlink-shell) :
 ```
 ./Tools/mavlink_shell.py 0.0.0.0:14550
 ```
 
-## Connecting a Lidar Lite range finder
+## 连接 Lidar Lite 测距仪
 
-The following instructions are for a Lidar Lite V3 connected via I2C. The I2C port on the Aero (labled compass) is used for the external magnetometer (part of the GPS). Therefore a I2C splitter has to be used to connect the Lidar Lite (see picture).
+以下说明用于通过I2C接口连接Lidar Lite V3。Aero上的I2C接口（标有compass）被用于额外的磁力计（GPS的一部分）。因此需要I2C分线器来连接Lidar Lite (见图).
 
 ![](../../assets/hardware/Aero_I2C_splitter.JPG)
 
-The pinout for the Lidar Lite V3 is as follows
+ Lidar Lite V3 引脚图如下：
 
-| pin | Aerofc I2C | Lidar Lite V3    |
-| --- | ---------- | ---------------- |
-| 1   | VCC        | VCC              |
-| 2   | SCL        | - (Power enable) |
-| 3   | SDA        | - (Mode control) |
-| 4   | GND        | SCL              |
-| 5   | -          | SDA              |
-| 6   | -          | GND              |
+| pin  | Aerofc I2C | Lidar Lite V3    |
+| ---- | ---------- | ---------------- |
+| 1    | VCC        | VCC              |
+| 2    | SCL        | - (Power enable) |
+| 3    | SDA        | - (Mode control) |
+| 4    | GND        | SCL              |
+| 5    | -          | SDA              |
+| 6    | -          | GND              |
 
 ![](../../assets/hardware/Aero_LidarLite.JPG)
